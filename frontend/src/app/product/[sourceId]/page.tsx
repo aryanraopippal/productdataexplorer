@@ -28,7 +28,8 @@ interface ProductDetail {
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function ProductDetailPage({ params }: { params: { sourceId: string } }) {
-  const apiUrl = `http://localhost:3000/products/${params.sourceId}`;
+  // This now uses our environment variable
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/products/${params.sourceId}`;
   const { data: product, error, isLoading } = useSWR<ProductDetail>(apiUrl, fetcher);
 
   if (isLoading) {

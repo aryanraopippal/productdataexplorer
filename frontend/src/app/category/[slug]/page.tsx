@@ -1,10 +1,12 @@
-'use client'; // <-- FIX #1: Make this a Client Component
+'use client';
 
 import useSWR from 'swr';
 import Link from 'next/link';
 
+// Define the shape of our Product data
 interface Product {
   id: number;
+  sourceId: string;
   title: string;
   author: string;
   price: string;
@@ -12,12 +14,17 @@ interface Product {
   productUrl: string;
 }
 
+// Our reusable fetcher function
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const apiUrl = `http://localhost:3000/categories/${params.slug}`;
+  // This now uses our environment variable
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/categories/${params.slug}`;
+
+  // Use SWR to fetch the product data for this specific category
   const { data: products, error, isLoading } = useSWR<Product[]>(apiUrl, fetcher);
 
+  // A simple function to make the slug look nicer for the title
   const formatTitle = (slug: string) => {
     return slug
       .split('-')
@@ -25,14 +32,21 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       .join(' ');
   };
 
+  // Handle Loading State
   if (isLoading) {
-    return <main className="flex min-h-screen flex-col items-center p-24"><h1 className="text-4xl font-bold">Loading products...</h1></main>;
+    return (
+      <main className="flex min-h-screen flex-col items-center p-24"><h1 className="text-4xl font-bold">Loading products...</h1></main>
+    );
   }
 
+  // Handle Error State
   if (error) {
-    return <main className="flex min-h-screen flex-col items-center p-24"><h1 className="text-4xl font-bold text-red-500">Failed to load products.</h1></main>;
+    return (
+      <main className="flex min-h-screen flex-col items-center p-24"><h1 className="text-4xl font-bold text-red-500">Failed to load products.</h1></main>
+    );
   }
 
+  // Handle Success State
   return (
     <main className="flex min-h-screen flex-col items-center p-8 md:p-12 bg-gray-50">
       <div className="w-full max-w-7xl">
@@ -45,10 +59,10 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
           </h1>
         </div>
 
+        {/* Product Grid */}
         {products && Array.isArray(products) && products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              // --- THIS IS THE WRAPPER WE ARE ADDING ---
               <Link key={product.id} href={`/product/${product.sourceId}`}>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden group transition-all duration-300 hover:shadow-xl h-full">
                   <div className="w-full h-80 bg-gray-200">

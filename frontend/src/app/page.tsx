@@ -3,6 +3,7 @@
 import useSWR from 'swr';
 import Link from 'next/link';
 
+// Define the shape of the data we expect from our API
 interface NavigationItem {
   id: number;
   title: string;
@@ -10,11 +11,14 @@ interface NavigationItem {
   url: string;
 }
 
+// Create a simple "fetcher" function that SWR will use
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function Home() {
-  const { data, error, isLoading } = useSWR('http://localhost:3000/scraper/navigation', fetcher);
+  // This now uses our environment variable
+  const { data, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/scraper/navigation`, fetcher);
 
+  // 1. Handle the loading state
   if (isLoading) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -23,6 +27,7 @@ export default function Home() {
     );
   }
 
+  // 2. Handle the error state
   if (error) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -32,6 +37,7 @@ export default function Home() {
     );
   }
 
+  // 3. Handle the success state
    return (
     <main className="flex min-h-screen flex-col items-center p-24 bg-gray-50">
       <div className="text-center mb-12">
@@ -44,7 +50,7 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {data && data.data.map((item: NavigationItem) => (
             <Link 
-              key={item.slug} // <-- FIX IS HERE
+              key={item.slug}
               href={`/category/${item.slug}`}
               className="p-6 bg-white rounded-lg shadow-md hover:shadow-xl hover:bg-green-50 transition-all duration-300 text-center"
             >
