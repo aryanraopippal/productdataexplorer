@@ -2,6 +2,7 @@
 
 import useSWR from 'swr';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Define the shape of our Product data
 interface Product {
@@ -18,7 +19,7 @@ interface Product {
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
-  // This now uses our environment variable
+  // Create the dynamic API URL based on the slug from the page's URL
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/categories/${params.slug}`;
 
   // Use SWR to fetch the product data for this specific category
@@ -65,8 +66,14 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             {products.map((product) => (
               <Link key={product.id} href={`/product/${product.sourceId}`}>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden group transition-all duration-300 hover:shadow-xl h-full">
-                  <div className="w-full h-80 bg-gray-200">
-                    <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover" />
+                  <div className="w-full h-80 bg-gray-200 relative">
+                    <Image 
+                      src={product.imageUrl} 
+                      alt={product.title} 
+                      fill={true}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover"
+                    />
                   </div>
                   <div className="p-4">
                     <h3 className="font-bold text-lg text-gray-800 truncate group-hover:text-green-700">{product.title}</h3>

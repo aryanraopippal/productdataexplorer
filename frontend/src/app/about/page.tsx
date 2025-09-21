@@ -1,3 +1,5 @@
+import Link from 'next/link'; // <-- Import Link
+
 export default function AboutPage() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -9,9 +11,10 @@ export default function AboutPage() {
         <p className="text-lg text-gray-600 mt-4 leading-relaxed">
           The project demonstrates a complete user flow from a homepage, through category pages, to product detail pages, all built with a production-minded approach.
         </p>
-        <a href="/" className="mt-8 inline-block text-green-600 hover:underline">
+        {/* Use the <Link> component instead of a standard <a> tag */}
+        <Link href="/" className="mt-8 inline-block text-green-600 hover:underline">
           &larr; Back to Home
-        </a>
+        </Link>
       </div>
     </main>
   );

@@ -2,6 +2,7 @@
 
 import useSWR from 'swr';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Define the shape of the detailed Product data
 interface ProductDetail {
@@ -28,7 +29,6 @@ interface ProductDetail {
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function ProductDetailPage({ params }: { params: { sourceId: string } }) {
-  // This now uses our environment variable
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/products/${params.sourceId}`;
   const { data: product, error, isLoading } = useSWR<ProductDetail>(apiUrl, fetcher);
 
@@ -51,8 +51,16 @@ export default function ProductDetailPage({ params }: { params: { sourceId: stri
         
         <div className="bg-white p-8 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Image Column */}
-          <div className="md:col-span-1">
-            <img src={product.imageUrl} alt={product.title} className="w-full h-auto object-cover rounded-md shadow-md" />
+          <div className="md:col-span-1 flex items-center justify-center">
+            <div className="relative w-full" style={{paddingBottom: '150%'}}> {/* Aspect ratio container */}
+               <Image 
+                src={product.imageUrl} 
+                alt={product.title} 
+                fill={true}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-contain rounded-md"
+              />
+            </div>
           </div>
 
           {/* Details Column */}
